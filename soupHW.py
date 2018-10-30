@@ -24,7 +24,7 @@ def getSumSpans(url):
     """
     html = urlopen(url, context=ctx).read()
     soup = BeautifulSoup(html, 'html.parser')
-    tags = soup('span')
+    tags = soup.find_all('span')
     tagsval = [int(tag.contents[0]) for tag in tags]
     return sum(tagsval)
 
