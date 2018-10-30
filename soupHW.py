@@ -5,35 +5,55 @@ from urllib.request import urlopen
 from bs4 import BeautifulSoup
 import ssl
 import unittest
+import re
+
+# Ignore SSL certificate errors
+ctx = ssl.create_default_context()
+ctx.check_hostname = False
+ctx.verify_mode = ssl.CERT_NONE
+
+if True:
+    url="http://py4e-data.dr-chuck.net/known_by_Fikret.html"
+    html = urlopen(url, context=ctx).read()
+    soup = BeautifulSoup(html, 'html.parser')
+    tags = soup('a')
 
 def getSumSpans(url):
     """ return a sum of all of the text values in the span tags at the passed url
-
         url -- a uniform resource locator - address for a web page
-
     """
+    html = urlopen(url, context=ctx).read()
+    soup = BeautifulSoup(html, 'html.parser')
+    tags = soup('span')
+    tagsval = [int(tag.contents[0]) for tag in tags]
+    return sum(tagsval)
 
-    pass
+        
 
 def followLinks(url, numAnchor, numTimes):
     """ Repeat for numTimes. Find the url at numAnchor position (the first link is at position 1) at
         the current url and use that as the new url
         return the text in the a tag from the last url that you process
-
         url -- a uniform resource locator - address for a web page
         numAnchor -- the position of the anchor (a tag) you are looking at on the page - the first link is position 1
         numTimes -- the number of times to repeat the process of finding the new url
     """
+    for loop in range(numTimes):
+        html = urlopen(url, context=ctx).read()
+        soup = BeautifulSoup(html, 'html.parser')
+        tags = soup('a')
+        url=tags[numAnchor-1].get('href')
 
-    pass
+    return tags[numAnchor-1].contents[0]
+
+
 
 def getGradeHistogram(url):
     """ return a sorted tuple with the grade range (such as 90, 80, etc) and the number of grades in that range
         url -- a uniform resource locator - address for a web page
     """
 
-    pass
-
+pass
 
 class TestHW7(unittest.TestCase):
 
@@ -54,3 +74,4 @@ class TestHW7(unittest.TestCase):
 
 
 unittest.main(verbosity=2)
+
